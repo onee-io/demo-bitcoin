@@ -12,12 +12,17 @@ type Block struct {
 	Data          []byte // 区块包含的数据
 	PrevBlockHash []byte // 前一个区块的哈希值
 	Hash          []byte // 区块自身的哈希值，用于校验区块数据有效
+	Nonce         int    // 工作量证明
 }
 
 // 创建一个新区块
 func NewBlock(data string, prevBlockHash []byte) *Block {
-	block := &Block{time.Now().Unix(), []byte(data), prevBlockHash, []byte{}}
-	block.SetHash()
+	block := &Block{time.Now().Unix(), []byte(data), prevBlockHash, []byte{}, 0}
+	pow := NewProofOfWork(block)
+	nonce, hash := pow.Run()
+
+	block.Hash = hash[:]
+	block.Nonce = nonce
 	return block
 }
 
